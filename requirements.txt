@@ -4,5 +4,3 @@ numpy
 pillow
 gdown
 requests
-torch
-torchvision
