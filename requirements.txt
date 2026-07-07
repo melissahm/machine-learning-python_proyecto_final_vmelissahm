@@ -18,3 +18,5 @@ tensorflow
 numpy
 pillow
 gdown
+torch
+torchvision
