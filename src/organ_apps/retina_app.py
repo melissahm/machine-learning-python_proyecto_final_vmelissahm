@@ -18,13 +18,24 @@ def render_result(result: FiveZoneTriageResult):
 
     st.subheader(f"{icon} {result.user_facing_label}")
 
-    col1, col2 = st.columns(2)
+    # ==========================
+# Mostrar únicamente el modelo
+# que realmente tomó la decisión
+# ==========================
 
-    with col1:
-        st.metric("Modelo v06-F1", f"{result.v06f1_prob:.3f}")
+    if result.severity == 1:
 
-    with col2:
-        st.metric("Modelo v07", f"{result.v07_prob:.3f}")
+        st.metric(
+        "Probabilidad de retina sana",
+        f"{(1 - result.v06f1_prob):.1%}"
+    )
+
+    else:
+
+        st.metric(
+        "Probabilidad estimada de retinopatía",
+        f"{result.v07_prob:.1%}"
+    )
 
     st.markdown(f"**Acción recomendada:** {result.action}")
 
