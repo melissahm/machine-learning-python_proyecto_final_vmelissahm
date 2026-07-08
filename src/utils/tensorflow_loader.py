@@ -9,7 +9,7 @@ os.makedirs(MODEL_DIR, exist_ok=True)
 TF_MODELS = {
     "brain": {
         "file": "brain_binary.keras",
-        "drive_id": "1aFdiRozDfrfzWr6tMcTmZHw73dG8_qzM",
+        "drive_id": "1HmwMc7jZuMEf3GY-k_yONYL3xZqRpV3S",
     },
     "liver_detector": {
         "file": "liver_detector.keras",
