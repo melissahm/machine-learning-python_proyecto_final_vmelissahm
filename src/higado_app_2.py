@@ -1,107 +1,186 @@
+import os
+import gdown
 import streamlit as st
+import tensorflow as tf
+import numpy as np
+from PIL import Image
 
-from utils.tensorflow_loader import load_tf_model
-from utils.image_utils import preprocess_for_tf, predict_binary_tf
+# ==========================
+# CONFIGURACIÓN MODELOS
+# ==========================
+
+LIVER_DETECTOR_PATH = "model_liver.keras"
+LIVER_DETECTOR_FILE_ID = "1RrBf8rwIav2cOcJBG16YKwStge_jB9jc"
+
+LIVER_TUMOR_PATH = "model_tumor_v4b.keras"
+LIVER_TUMOR_FILE_ID = "1rETd4jIPIXxBJtIRXElP8b7_mf7ESGnB"
+
+# Modelo 1: detector de hígado
+# Entrada esperada: 256x256x1
+# Normalización: externa, dividir entre 255
+
+LIVER_DETECTOR_SIZE = (256, 256)
+
+# Modelo 2: tumor / no tumor
+# Entrada esperada: 384x384x1
+# Normalización: externa, dividir entre 255
+
+LIVER_TUMOR_SIZE = (384, 384)
+
+# ==========================
+# CARGA DE MODELOS
+# ==========================
+
+@st.cache_resource
+def load_model_from_drive(model_path, file_id):
+    if not os.path.exists(model_path):
+        url = f"https://drive.google.com/uc?id={file_id}"
+        with st.spinner(f"Descargando modelo {model_path}..."):
+            gdown.download(url, model_path, quiet=False)
+
+    return tf.keras.models.load_model(model_path)
 
 
-def run():
-    st.header("🟤 Clasificador de hígado")
+# ==========================
+# PREPROCESAMIENTO
+# ==========================
 
-    st.markdown(
-        """
-        Este módulo utiliza **dos modelos binarios**:
+def preprocess_liver_image(uploaded_file, img_size):
+    """
+    Preprocesamiento utilizado para los modelos de hígado.
 
-        1. Primero detecta si la imagen contiene hígado.
-        2. Si detecta hígado, ejecuta un segundo modelo para clasificar:
-           **tumor / no tumor**.
-        """
+    Pasos:
+    1. Leer imagen.
+    2. Convertir a escala de grises.
+    3. Redimensionar al tamaño requerido por el modelo.
+    4. Convertir a array NumPy.
+    5. Normalizar dividiendo entre 255.
+    6. Añadir canal: (alto, ancho, 1).
+    7. Añadir batch: (1, alto, ancho, 1).
+    """
+
+    image = Image.open(uploaded_file).convert("L")
+    image_display = image.copy()
+
+    image = image.resize(img_size)
+
+    img_array = np.array(image).astype("float32") / 255.0
+
+    img_array = np.expand_dims(img_array, axis=-1)
+    img_array = np.expand_dims(img_array, axis=0)
+
+    return image_display, img_array
+
+
+def predict_binary(model, img_array):
+    prediction = model.predict(img_array, verbose=0)[0][0]
+
+    prob_positive = float(prediction)
+    prob_negative = 1 - prob_positive
+
+    return prob_positive, prob_negative
+
+
+# ==========================
+# STREAMLIT APP
+# ==========================
+
+st.title("🟤 Clasificador de hígado")
+
+st.markdown(
+    """
+    Esta aplicación utiliza un flujo en dos etapas:
+
+    1. **Modelo detector de hígado**  
+       Determina si la imagen contiene hígado.
+
+    2. **Modelo tumor / no tumor**  
+       Solo se ejecuta si el primer modelo detecta hígado.
+    """
+)
+
+uploaded_file = st.file_uploader(
+    "Sube una imagen de tomografía abdominal",
+    type=["jpg", "jpeg", "png"]
+)
+
+if uploaded_file is not None:
+
+    # ==========================
+    # PASO 1: DETECTAR HÍGADO
+    # ==========================
+
+    liver_detector_model = load_model_from_drive(
+        LIVER_DETECTOR_PATH,
+        LIVER_DETECTOR_FILE_ID
     )
 
-    uploaded_file = st.file_uploader(
-        "Sube una imagen de tomografía abdominal",
-        type=["jpg", "jpeg", "png"],
-        key="liver_uploader"
-    )
-
-    if uploaded_file is None:
-        return
-
-    detector_model = load_tf_model("liver_detector")
-
-    image_display, img_array_detector = preprocess_for_tf(
+    image_display, img_detector = preprocess_liver_image(
         uploaded_file,
-        detector_model,
-        "liver_detector"
+        LIVER_DETECTOR_SIZE
     )
 
-    st.image(image_display, caption="Imagen cargada", use_container_width=True)
+    st.image(
+        image_display,
+        caption="Imagen cargada",
+        use_container_width=True
+    )
 
-    prob_liver, prob_no_liver = predict_binary_tf(
-        detector_model,
-        img_array_detector
+    prob_liver, prob_no_liver = predict_binary(
+        liver_detector_model,
+        img_detector
     )
 
     st.subheader("Paso 1: detección de hígado")
 
-    liver_detected = prob_liver >= 0.5
-
-    if liver_detected:
+    if prob_liver >= 0.5:
         st.success("🟢 Se detecta hígado en la imagen")
     else:
         st.error("🔴 No se detecta hígado en la imagen")
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.metric("Probabilidad de hígado", f"{prob_liver:.2%}")
-
-    with col2:
-        st.metric("Probabilidad de no hígado", f"{prob_no_liver:.2%}")
-
+    st.metric("Probabilidad de hígado", f"{prob_liver:.2%}")
+    st.metric("Probabilidad de no hígado", f"{prob_no_liver:.2%}")
     st.progress(prob_liver)
 
-    if not liver_detected:
+    # Si no hay hígado, termina el flujo
+    if prob_liver < 0.5:
         st.info(
-            "Como el modelo no detectó hígado, no se ejecuta el clasificador tumor/no tumor."
+            "Como no se detectó hígado, no se ejecuta el modelo tumor/no tumor."
         )
-        return
-
-    st.divider()
-
-    st.subheader("Paso 2: clasificación tumor / no tumor")
-
-    tumor_model = load_tf_model("liver_tumor")
-
-    _, img_array_tumor = preprocess_for_tf(
-        uploaded_file,
-        tumor_model,
-        "liver_tumor"
-    )
-
-    prob_tumor, prob_notumor = predict_binary_tf(
-        tumor_model,
-        img_array_tumor
-    )
-
-    if prob_tumor >= 0.5:
-        st.error("🔴 Posible tumor hepático detectado")
     else:
-        st.success("🟢 No se detecta tumor hepático")
 
-    col1, col2 = st.columns(2)
+        # ==========================
+        # PASO 2: TUMOR / NO TUMOR
+        # ==========================
 
-    with col1:
+        st.divider()
+
+        liver_tumor_model = load_model_from_drive(
+            LIVER_TUMOR_PATH,
+            LIVER_TUMOR_FILE_ID
+        )
+
+        _, img_tumor = preprocess_liver_image(
+            uploaded_file,
+            LIVER_TUMOR_SIZE
+        )
+
+        prob_tumor, prob_notumor = predict_binary(
+            liver_tumor_model,
+            img_tumor
+        )
+
+        st.subheader("Paso 2: clasificación tumor / no tumor")
+
+        if prob_tumor >= 0.5:
+            st.error("🔴 Posible tumor hepático detectado")
+        else:
+            st.success("🟢 No se detecta tumor hepático")
+
         st.metric("Probabilidad de tumor", f"{prob_tumor:.2%}")
-
-    with col2:
         st.metric("Probabilidad de no tumor", f"{prob_notumor:.2%}")
+        st.progress(prob_tumor)
 
-    st.progress(prob_tumor)
-
-    st.warning(
-        "Modelo académico. No debe utilizarse como herramienta de diagnóstico médico."
-    )
-
-
-if __name__ == "__main__":
-    run()
+st.caption(
+    "⚠️ Modelo académico. No debe utilizarse como herramienta de diagnóstico médico."
+)
