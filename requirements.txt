@@ -6,3 +6,6 @@ gdown
 requests
 torch
 torchvision
+torch
+torchvision
+opencv-python
