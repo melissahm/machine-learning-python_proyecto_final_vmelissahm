@@ -613,22 +613,7 @@ def validate_probabilities(
     return v06, v07
 
 
-__all__ = [
-    "MiniResNetV06",
-    "build_model",
-    "load_checkpoint",
-    "load_v06f1_model",
-    "load_v07_model",
-    "predict_two_model_probabilities",
-    "triage_from_image",
-    "triage_from_probabilities",
-    "validate_probabilities",
-    "preprocess_image",
-    "FiveZoneTriageResult",
-    "PreprocessingError",
-    "triage_from_image_cascade",
-    "InputImage",
-]
+
 
 def triage_from_image_cascade(
     image_input: InputImage,
@@ -685,3 +670,20 @@ def triage_from_image_cascade(
         v06f1_prob=v06f1_prob,
         v07_prob=v07_prob
     )
+
+    __all__ = [
+        "MiniResNetV06",
+        "build_model",
+        "load_checkpoint",
+        "load_v06f1_model",
+        "load_v07_model",
+        "predict_two_model_probabilities",
+        "triage_from_image",
+        "triage_from_probabilities",
+        "validate_probabilities",
+        "preprocess_image",
+        "FiveZoneTriageResult",
+        "PreprocessingError",
+        "triage_from_image_cascade",
+        "InputImage",
+        ]
