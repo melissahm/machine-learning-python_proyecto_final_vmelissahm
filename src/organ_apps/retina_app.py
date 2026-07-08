@@ -2,7 +2,7 @@ import streamlit as st
 from pathlib import Path
 
 from utils.pytorch_loader import load_retina_models
-from utils.retina_preprocessing import triage_from_image, FiveZoneTriageResult
+from utils.retina_preprocessing import triage_from_image_cascade, FiveZoneTriageResult
 
 
 def render_result(result: FiveZoneTriageResult):
@@ -63,10 +63,10 @@ def run():
         with st.spinner("Analizando imagen de retina..."):
             v06f1_model, v07_model = load_retina_models()
 
-            result = triage_from_image(
-                str(temp_path),
-                v06f1_model=v06f1_model,
-                v07_model=v07_model,
+            result = triage_from_image_cascade(
+            str(temp_path),
+            v06f1_model=v06f1_model,
+            v07_model=v07_model,
             )
 
         render_result(result)

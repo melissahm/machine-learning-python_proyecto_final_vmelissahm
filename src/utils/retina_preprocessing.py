@@ -626,5 +626,62 @@ __all__ = [
     "preprocess_image",
     "FiveZoneTriageResult",
     "PreprocessingError",
+    "triage_from_image_cascade",
     "InputImage",
 ]
+
+def triage_from_image_cascade(
+    image_input: InputImage,
+    *,
+    v06f1_model: MiniResNetV06,
+    v07_model: MiniResNetV06,
+    device: torch.device | None = None,
+) -> FiveZoneTriageResult:
+    """
+    Flujo en cascada para retinopatía diabética.
+
+    1. Primero se ejecuta el modelo v06-F1.
+    2. Si v06-F1 detecta un caso sano con alta confianza, termina el flujo.
+    3. Si no es sano con alta confianza, se ejecuta el modelo v07.
+    4. Finalmente se devuelve el resultado de triage.
+    """
+
+    if device is None:
+        device = next(v06f1_model.parameters()).device
+
+    tensor = preprocess_image(image_input, batched=True)
+    tensor = tensor.to(device)
+
+    # ==========================
+    # PASO 1: MODELO V06-F1
+    # ==========================
+
+    with torch.no_grad():
+        v06f1_logit = v06f1_model(tensor)
+        v06f1_prob = float(torch.sigmoid(v06f1_logit).item())
+
+    # Si v06-F1 considera que es sano con mucha confianza,
+    # termina aquí y no ejecuta v07.
+    if v06f1_prob < V06F1_SAFE_HEALTHY_THRESHOLD:
+        result = triage_five_zones(
+            v06f1_prob=v06f1_prob,
+            v07_prob=0.0
+        )
+
+        if isinstance(result, list):
+            return result[0]
+
+        return result
+
+    # ==========================
+    # PASO 2: MODELO V07
+    # ==========================
+
+    with torch.no_grad():
+        v07_logit = v07_model(tensor)
+        v07_prob = float(torch.sigmoid(v07_logit).item())
+
+    return triage_from_probabilities(
+        v06f1_prob=v06f1_prob,
+        v07_prob=v07_prob
+    )
