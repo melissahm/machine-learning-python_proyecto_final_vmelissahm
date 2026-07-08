@@ -613,8 +613,6 @@ def validate_probabilities(
     return v06, v07
 
 
-
-
 def triage_from_image_cascade(
     image_input: InputImage,
     *,
@@ -637,16 +635,10 @@ def triage_from_image_cascade(
     tensor = preprocess_image(image_input, batched=True)
     tensor = tensor.to(device)
 
-    # ==========================
-    # PASO 1: MODELO V06-F1
-    # ==========================
-
     with torch.no_grad():
         v06f1_logit = v06f1_model(tensor)
         v06f1_prob = float(torch.sigmoid(v06f1_logit).item())
 
-    # Si v06-F1 considera que es sano con mucha confianza,
-    # termina aquí y no ejecuta v07.
     if v06f1_prob < V06F1_SAFE_HEALTHY_THRESHOLD:
         result = triage_five_zones(
             v06f1_prob=v06f1_prob,
@@ -658,10 +650,6 @@ def triage_from_image_cascade(
 
         return result
 
-    # ==========================
-    # PASO 2: MODELO V07
-    # ==========================
-
     with torch.no_grad():
         v07_logit = v07_model(tensor)
         v07_prob = float(torch.sigmoid(v07_logit).item())
@@ -671,19 +659,20 @@ def triage_from_image_cascade(
         v07_prob=v07_prob
     )
 
-    __all__ = [
-        "MiniResNetV06",
-        "build_model",
-        "load_checkpoint",
-        "load_v06f1_model",
-        "load_v07_model",
-        "predict_two_model_probabilities",
-        "triage_from_image",
-        "triage_from_probabilities",
-        "validate_probabilities",
-        "preprocess_image",
-        "FiveZoneTriageResult",
-        "PreprocessingError",
-        "triage_from_image_cascade",
-        "InputImage",
-        ]
+
+__all__ = [
+    "MiniResNetV06",
+    "build_model",
+    "load_checkpoint",
+    "load_v06f1_model",
+    "load_v07_model",
+    "predict_two_model_probabilities",
+    "triage_from_image",
+    "triage_from_image_cascade",
+    "triage_from_probabilities",
+    "validate_probabilities",
+    "preprocess_image",
+    "FiveZoneTriageResult",
+    "PreprocessingError",
+    "InputImage",
+]
