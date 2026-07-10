@@ -8,23 +8,23 @@ from PIL import Image
 
 MODEL_PREPROCESSING = {
     "brain": {
-        # El modelo de cerebro ya incorpora Rescaling(1./255)
+        # El modelo incorpora una capa Rescaling(1./255),
+        # por lo que NO debe normalizarse externamente.
         "normalize": False
     },
     "liver_detector": {
-        # El detector de hígado fue entrenado con valores entre 0 y 1
+        # Entrenado con imágenes normalizadas entre 0 y 1.
         "normalize": True
     },
     "liver_tumor": {
-        # El clasificador de tumor hepático fue entrenado con /255
+        # Entrenado con imágenes normalizadas entre 0 y 1.
         "normalize": True
     },
     "lung": {
-        # El modelo de neumonía fue entrenado con /255
+        # Entrenado con imágenes RGB normalizadas entre 0 y 1.
         "normalize": True
     },
 }
-
 
 # =========================================================
 # OBTENER FORMA DE ENTRADA DEL MODELO
