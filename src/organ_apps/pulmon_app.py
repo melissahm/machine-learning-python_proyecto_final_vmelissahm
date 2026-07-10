@@ -37,11 +37,6 @@ def run():
 
     model = load_tf_model("lung")
 
-    image_display, img_array = preprocess_for_tf(
-        uploaded_file,
-        model,
-        "lung"
-    )
 
     st.image(
         image_display,
