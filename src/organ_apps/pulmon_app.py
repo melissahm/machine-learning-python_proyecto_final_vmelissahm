@@ -1,22 +1,28 @@
 import streamlit as st
 
 from utils.tensorflow_loader import load_tf_model
-from utils.image_utils import preprocess_for_tf, predict_binary_tf
+from utils.image_utils import preprocess_for_tf
+
+
+THRESHOLD = 0.5
 
 
 def run():
-    st.header("🫁 Clasificador de pulmones")
+    st.header("🫁 Clasificador de radiografías de tórax")
 
     st.markdown(
         """
-        Modelo para radiografías de tórax.
+        Este modelo binario analiza radiografías de tórax y clasifica la imagen en:
 
-        Este módulo queda pendiente de validación final con el grupo:
+        - **Normal**
+        - **Neumonía**
 
-        - clases exactas,
-        - interpretación de la salida,
-        - umbral final,
-        - preprocesamiento esperado.
+        **Preprocesamiento:**
+
+        - Conversión a RGB.
+        - Redimensionamiento a **128 × 128**.
+        - Normalización externa dividiendo los píxeles entre 255.
+        - Tensor final: **(1, 128, 128, 3)**.
         """
     )
 
@@ -31,25 +37,50 @@ def run():
 
     model = load_tf_model("lung")
 
-    image_display, img_array = preprocess_for_tf(uploaded_file, model)
+    image_display, img_array = preprocess_for_tf(
+        uploaded_file,
+        model,
+        "lung"
+    )
 
-    st.image(image_display, caption="Imagen cargada", use_container_width=True)
+    st.image(
+        image_display,
+        caption="Radiografía cargada",
+        use_container_width=True
+    )
 
-    prob_positive, prob_negative = predict_binary_tf(model, img_array)
+    raw_prob = float(model.predict(img_array, verbose=0)[0][0])
 
-    st.subheader("Resultado provisional")
+    prob_pneumonia = raw_prob
+    prob_normal = 1 - raw_prob
+
+    st.subheader("Resultado")
+
+    if raw_prob >= THRESHOLD:
+        st.error("🔴 Posible neumonía detectada")
+    else:
+        st.success("🟢 Radiografía clasificada como normal")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.metric("Probabilidad clase positiva", f"{prob_positive:.2%}")
+        st.metric(
+            "Probabilidad de neumonía",
+            f"{prob_pneumonia:.2%}"
+        )
 
     with col2:
-        st.metric("Probabilidad clase negativa", f"{prob_negative:.2%}")
+        st.metric(
+            "Probabilidad normal",
+            f"{prob_normal:.2%}"
+        )
 
-    st.progress(prob_positive)
+    st.progress(prob_pneumonia)
 
     st.warning(
-        "Resultado provisional. Falta confirmar si la clase positiva corresponde "
-        "a tumor, anomalía u otra etiqueta."
+        "Modelo académico. No debe utilizarse como herramienta de diagnóstico médico."
     )
+
+
+if __name__ == "__main__":
+    run()
