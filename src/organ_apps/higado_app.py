@@ -1,83 +1,118 @@
 import streamlit as st
 
 from utils.tensorflow_loader import load_tf_model
-from utils.image_utils import preprocess_for_tf, predict_binary_tf
+from utils.image_utils import (
+    preprocess_liver_roi_predicted,
+    predict_binary_tf,
+)
+
+SEGMENTATION_THRESHOLD = 0.30
+TUMOR_THRESHOLD = 0.50
+ROI_MARGIN = 10
 
 
 def run():
-    st.header("🟤 Clasificador de hígado")
+    st.header("🟤 Análisis hepático")
 
     st.markdown(
         """
-        Este módulo utiliza **dos modelos binarios**:
+        Este módulo utiliza una cascada de **dos modelos de Deep Learning**:
 
-        1. Primero detecta si la imagen contiene hígado.
-        2. Si detecta hígado, ejecuta un segundo modelo para clasificar:
-           **tumor / no tumor**.
+        1. Una **U-Net** segmenta automáticamente el hígado.
+        2. La región hepática aislada se envía al clasificador **V4B**
+           para estimar **tumor / no tumor**.
+
+        Solo debes subir una tomografía original tipo `volume`.
+        No es necesario aportar una máscara.
         """
     )
 
     uploaded_file = st.file_uploader(
         "Sube una imagen de tomografía abdominal",
         type=["jpg", "jpeg", "png"],
-        key="liver_uploader"
+        key="liver_uploader",
     )
 
     if uploaded_file is None:
         return
 
-    detector_model = load_tf_model("liver_detector")
+    segmentation_model = load_tf_model("liver_segmentation")
+    tumor_model = load_tf_model("liver_tumor")
 
-    image_display, img_array_detector = preprocess_for_tf(
-    uploaded_file,
-    detector_model,
-    "liver_detector"
-    )
+    try:
+        (
+            image_display,
+            mask_probability,
+            mask_binary,
+            roi_display,
+            roi_batch,
+        ) = preprocess_liver_roi_predicted(
+            uploaded_file=uploaded_file,
+            segmentation_model=segmentation_model,
+            tumor_model=tumor_model,
+            segmentation_threshold=SEGMENTATION_THRESHOLD,
+            margin=ROI_MARGIN,
+        )
 
-    st.image(image_display, caption="Imagen cargada", use_container_width=True)
+    except ValueError as error:
+        st.image(
+            uploaded_file,
+            caption="Imagen cargada",
+            use_container_width=True,
+        )
 
-    prob_liver, prob_no_liver = predict_binary_tf(detector_model, img_array_detector)
-
-    st.subheader("Paso 1: detección de hígado")
-
-    liver_detected = prob_liver >= 0.5
-
-    if liver_detected:
-        st.success("🟢 Se detecta hígado en la imagen")
-    else:
-        st.error("🔴 No se detecta hígado en la imagen")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.metric("Probabilidad de hígado", f"{prob_liver:.2%}")
-
-    with col2:
-        st.metric("Probabilidad de no hígado", f"{prob_no_liver:.2%}")
-
-    st.progress(prob_liver)
-
-    if not liver_detected:
+        st.error("No se pudo aislar correctamente la región hepática.")
         st.info(
-            "Como el modelo no detectó hígado, no se ejecuta el clasificador tumor/no tumor."
+            f"{error} Esto puede ocurrir en cortes extremos donde "
+            "el hígado aparece de forma mínima."
+        )
+        st.warning(
+            "Modelo académico. No debe utilizarse como herramienta "
+            "de diagnóstico médico."
         )
         return
 
-    st.divider()
-
-    st.subheader("Paso 2: clasificación tumor / no tumor")
-
-    tumor_model = load_tf_model("liver_tumor")
-
-    _, img_array_tumor = preprocess_for_tf(
-    uploaded_file,
-    tumor_model,
-    "liver_tumor"
+    st.image(
+        image_display,
+        caption="Tomografía original",
+        use_container_width=True,
     )
 
-    prob_tumor, prob_notumor = predict_binary_tf(tumor_model, img_array_tumor)
+    st.subheader("Paso 1: segmentación automática del hígado")
+    st.success("🟢 Se aisló una región hepática válida")
 
-    if prob_tumor >= 0.5:
+    with st.expander("Ver resultado de la segmentación", expanded=False):
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.image(
+                mask_binary * 255,
+                caption="Máscara hepática predicha",
+                clamp=True,
+                use_container_width=True,
+            )
+
+        with col2:
+            st.image(
+                roi_display,
+                caption="ROI enviada al modelo V4B",
+                use_container_width=True,
+            )
+
+        st.caption(
+            f"Umbral de segmentación: {SEGMENTATION_THRESHOLD:.2f} · "
+            f"Margen de ROI: {ROI_MARGIN} píxeles"
+        )
+
+    st.divider()
+    st.subheader("Paso 2: clasificación tumor / no tumor")
+
+    prob_tumor, prob_no_tumor = predict_binary_tf(
+        tumor_model,
+        roi_batch,
+    )
+
+    if prob_tumor >= TUMOR_THRESHOLD:
         st.error("🔴 Posible tumor hepático detectado")
     else:
         st.success("🟢 No se detecta tumor hepático")
@@ -88,10 +123,12 @@ def run():
         st.metric("Probabilidad de tumor", f"{prob_tumor:.2%}")
 
     with col2:
-        st.metric("Probabilidad de no tumor", f"{prob_notumor:.2%}")
+        st.metric("Probabilidad de no tumor", f"{prob_no_tumor:.2%}")
 
-    st.progress(prob_tumor)
+    st.progress(min(max(prob_tumor, 0.0), 1.0))
+    st.caption(f"Umbral de clasificación: {TUMOR_THRESHOLD:.2f}")
 
     st.warning(
-        "Modelo académico. No debe utilizarse como herramienta de diagnóstico médico."
+        "Modelo académico. No debe utilizarse como herramienta "
+        "de diagnóstico médico."
     )
