@@ -245,10 +245,7 @@ El modelo binario de cerebro alcanzó una **accuracy del 92 %** sobre un conjunt
 | Tumor | 0,96 | 0,86 | 0,91 | 400 |
 | **Promedio ponderado** | **0,92** | **0,92** | **0,91** | **800** |
 
-El modelo obtuvo una **accuracy del 92 %** sobre un conjunto de test balanceado de 800 imágenes.
-
-Los resultados muestran una elevada capacidad para diferenciar entre imágenes con presencia de tumor y aquellas sin evidencia tumoral, constituyendo una base sólida para aplicaciones académicas de apoyo al diagnóstico.
-
+Los resultados muestran una elevada capacidad para diferenciar entre imágenes con presencia de tumor y aquellas sin evidencia tumoral.
 
 ---
 
