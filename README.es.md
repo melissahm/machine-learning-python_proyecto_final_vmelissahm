@@ -1,18 +1,15 @@
+
 <p align="center">
   <img src="assets/logo.png" width="700">
 </p>
 
 # 🩺 MedImage Diagnosis: Brain & Liver Tumor Detection
-
-Sistema basado en **Deep Learning** para la detección automática de tumores en imágenes médicas de cerebro e hígado.
-
-La aplicación integra dos módulos desarrollados de forma independiente:
-
-- 🧠 Clasificación binaria de tumores cerebrales mediante resonancias magnéticas (RM).
-- 🟤 Detección de tumores hepáticos mediante una arquitectura en cascada basada en segmentación U-Net y una CNN de clasificación.
-
-Este proyecto se presenta mediante una aplicación web construida con **Streamlit**, que permite realizar inferencias sobre imágenes médicas de forma interactiva.
-
+<a>
+<img src="https://img.shields.io/badge/Python-3.11-blue?style=for-the-badge&logo=python">
+</a>
+<a>
+<img src="https://img.shields.io/badge/TensorFlow-2.x-orange?style=for-the-badge&logo=tensorflow">
+</a>
 <p align="center">
 
 <a href="https://machine-learning-pythonproyectofinalvmelissahm-h2zooaso9fgqr6z.streamlit.app/">
@@ -23,7 +20,15 @@ Este proyecto se presenta mediante una aplicación web construida con **Streamli
 <img src="https://img.shields.io/badge/GitHub-Repositorio-black?style=for-the-badge&logo=github">
 </a>
 
-</p>
+</p> 
+Sistema basado en **Deep Learning** para la detección automática de tumores en imágenes médicas de cerebro e hígado.
+
+La aplicación integra dos módulos desarrollados de forma independiente:
+
+- 🧠 Clasificación binaria de tumores cerebrales mediante resonancias magnéticas (RM).
+- 🟤 Detección de tumores hepáticos mediante una arquitectura en cascada basada en segmentación U-Net y una CNN de clasificación.
+
+Este proyecto se presenta mediante una aplicación web construida con **Streamlit**, que permite realizar inferencias sobre imágenes médicas de forma interactiva.
 
 ## 📑 Índice
 
@@ -35,10 +40,13 @@ Este proyecto se presenta mediante una aplicación web construida con **Streamli
 - Datasets
 - Resultados
 - Tecnologías utilizadas
-- Instalación
+- Instalación y ejecución
+- Descarga de los modelos
 - Estructura del proyecto
+- Limitaciones
 - Trabajo futuro
-- Autor
+- Aviso médico
+- Autora
 
 ## Introducción
 
@@ -82,19 +90,35 @@ Resultado de una predicción.
 </p>
 
 ### 🟤 Análisis hepático
+
 Interfaz principal del módulo de clasificación.
+
 <p align="center">
-  <img src="assets/screenshots/streamlit_higado.png" width="900">
+  <img
+    src="assets/screenshots/streamlit_higado.png"
+    width="900"
+    alt="Interfaz del módulo de análisis hepático"
+  >
 </p>
-Segmentación de región hepática.
-<img
-  src="assets/screenshots/streamlit_higado_segmentacion.png"
-  width="900"
-  alt="Segmentación automática del hígado y extracción de la región de interés"
->
-Resultado de una predicción.
+
+Segmentación de la región hepática.
+
 <p align="center">
-  <img src="assets/screenshots/streamlit_higado_result.png" width="900">
+  <img
+    src="assets/screenshots/streamlit_higado_segmentacion.png"
+    width="900"
+    alt="Segmentación automática del hígado y extracción de la región de interés"
+  >
+</p>
+
+Resultado de una predicción.
+
+<p align="center">
+  <img
+    src="assets/screenshots/streamlit_higado_result.png"
+    width="900"
+    alt="Resultado de la clasificación de tumor hepático"
+  >
 </p>
 
 
@@ -168,7 +192,7 @@ El dataset contiene:
 | Pacientes o volúmenes | 131 |
 | Imágenes CT originales | 58.638 |
 | Máscaras de hígado | 58.638 |
-| Máscaras de lesión o tumor | 58.638 |
+| Máscaras de tumor | 58.638 |
 
 Cada estudio volumétrico está compuesto por múltiples cortes axiales bidimensionales. Para evitar fuga de información entre los conjuntos, la separación de entrenamiento y validación se realizó por paciente.
 
@@ -226,9 +250,6 @@ La matriz de confusión registró:
 - 14 falsos positivos.
 - 54 falsos negativos.
 
-<p align="center">
-  <img src="assets/diagrams/diagrama_cerebro.png" width="850" alt="Resultados del modelo cerebral">
-</p>
 
 ---
 
@@ -339,7 +360,7 @@ La aplicación se abrirá automáticamente en el navegador.
 
 Los archivos de los modelos no se almacenan directamente en el repositorio debido a su tamaño.
 
-La aplicación utiliza **gdown** para descargarlos desde Google Drive cuando son necesarios.
+La descarga se realiza únicamente la primera vez que se ejecuta la aplicación. Posteriormente, los modelos quedan almacenados de forma local para evitar nuevas descargas.
 
 Los modelos incluidos en el pipeline son:
 
@@ -461,4 +482,8 @@ Data scientist
   <a href="https://github.com/melissahm">
     <img src="https://img.shields.io/badge/GitHub-melissahm-black?style=for-the-badge&logo=github">
   </a>
+</p>
+
+<p align="right">
+  <a href="README.md">English version</a>
 </p>
