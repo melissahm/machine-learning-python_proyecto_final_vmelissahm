@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.png" width="700">
+</p>
+
 # 🩺 MedImage Diagnosis: Brain & Liver Tumor Detection
 
 Sistema desarrollado mediante **Deep Learning** para la detección automática de tumores en imágenes médicas.
@@ -56,3 +60,21 @@ Para ello se desarrollaron dos pipelines independientes que posteriormente fuero
 - Aplicación web desarrollada con Streamlit.
 - Descarga automática de modelos desde Google Drive.
 - Predicción en tiempo real sobre imágenes médicas.
+
+## 🖥️ Vista previa
+
+### Página principal
+
+<p align="center">
+  <img src="assets/screenshots/home_streamlit.png" width="900">
+</p>
+
+### 🧠 Clasificador de tumor cerebral
+
+<p align="center">
+  <img src="assets/screenshots/streamlit_cerebro.png" width="900">
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/streamlit_cerebro_result.png" width="900">
+</p>
