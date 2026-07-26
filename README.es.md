@@ -87,9 +87,11 @@ Interfaz principal del módulo de clasificación.
   <img src="assets/screenshots/streamlit_higado.png" width="900">
 </p>
 Segmentación de región hepática.
-<p align="center">
-  <img src="assets/screenshots/streamlit_higado_segmentacion.png" width="900">
-</p>
+<img
+  src="assets/screenshots/streamlit_higado_segmentacion.png"
+  width="900"
+  alt="Segmentación automática del hígado y extracción de la región de interés"
+>
 Resultado de una predicción.
 <p align="center">
   <img src="assets/screenshots/streamlit_higado_result.png" width="900">
