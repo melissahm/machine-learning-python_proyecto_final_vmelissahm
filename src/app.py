@@ -36,7 +36,7 @@ ASSETS_DIR = PROJECT_ROOT / "assets"
 # CARGA DE IMÁGENES
 # =========================================================
 
-logo = Image.open(ASSETS_DIR / "logo_final.png")
+logo = Image.open(ASSETS_DIR / "logo.png")
 brain_icon = Image.open(ASSETS_DIR / "brain.png")
 liver_icon = Image.open(ASSETS_DIR / "liver.png")
 
