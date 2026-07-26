@@ -37,15 +37,12 @@ ASSETS_DIR = PROJECT_ROOT / "assets"
 # =========================================================
 
 logo = Image.open(ASSETS_DIR / "logo.png")
-brain_icon = Image.open(ASSETS_DIR / "brain.png")
-liver_icon = Image.open(ASSETS_DIR / "liver.png")
 
 
 # =========================================================
 # CABECERA
 # =========================================================
 
-# Logo principal
 st.image(logo, use_container_width=True)
 
 st.markdown(
@@ -86,34 +83,18 @@ st.warning(
 option = st.sidebar.selectbox(
     "Selecciona el estudio",
     [
-        "Cerebro",
-        "Hígado"
+        "🧠 Cerebro",
+        "🟤 Hígado"
     ]
 )
-
-
-# Imagen del órgano seleccionado
-if option == "Cerebro":
-    st.sidebar.image(
-        brain_icon,
-        width=180,
-        caption="Resonancia magnética cerebral"
-    )
-
-elif option == "Hígado":
-    st.sidebar.image(
-        liver_icon,
-        width=180,
-        caption="Tomografía computarizada abdominal"
-    )
 
 
 # =========================================================
 # EJECUCIÓN DE LOS MÓDULOS
 # =========================================================
 
-if option == "Cerebro":
+if option == "🧠 Cerebro":
     cerebro_app.run()
 
-elif option == "Hígado":
+elif option == "🟤 Hígado":
     higado_app.run()
