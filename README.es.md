@@ -46,7 +46,7 @@ Este proyecto se presenta mediante una aplicación web construida con **Streamli
 - Funcionamiento del modelo cerebral
 - Funcionamiento del modelo hepático
 - Datasets
-- Resultados
+- Resumen de resultados
 - Tecnologías utilizadas
 - Instalación y ejecución
 - Descarga de los modelos
@@ -221,7 +221,7 @@ No existen pacientes repetidos entre entrenamiento y validación.
 
 ---
 
-## 📊 Resultados
+## 📊 Resumen de resultados
 
 ### Resumen de métricas
 
@@ -235,7 +235,7 @@ No existen pacientes repetidos entre entrenamiento y validación.
 
 ---
 
-### 🧠 Resultados del clasificador cerebral
+### 🧠 Evaluación del clasificador cerebral
 
 El modelo binario de cerebro alcanzó una **accuracy del 92 %** sobre un conjunto de test balanceado de 800 imágenes.
 
@@ -252,7 +252,7 @@ Los resultados muestran una elevada capacidad para diferenciar entre imágenes c
 
 ---
 
-### 🟤 Resultados de la segmentación hepática
+### 🟤 Evaluación de la segmentación hepática
 
 El modelo U-Net alcanzó un **Dice Score de 0,92** en la segmentación automática del hígado.
 
@@ -267,7 +267,7 @@ El resultado final del pipeline depende de la calidad de la segmentación, ya qu
 
 ---
 
-### 🟤 Resultados del clasificador hepático V4B
+### 🟤 Evaluación del clasificador hepático V4B
 
 El clasificador hepático obtuvo una **accuracy del 67 %**.
 
