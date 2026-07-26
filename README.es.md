@@ -21,6 +21,10 @@
 </a>
 
 </p> 
+<p align="center">
+Aplicación de Deep Learning para el análisis de resonancias magnéticas cerebrales y tomografías computarizadas abdominales.
+</p>
+
 Sistema basado en **Deep Learning** para la detección automática de tumores en imágenes médicas de cerebro e hígado.
 
 La aplicación integra dos módulos desarrollados de forma independiente:
@@ -29,6 +33,10 @@ La aplicación integra dos módulos desarrollados de forma independiente:
 - 🟤 Detección de tumores hepáticos mediante una arquitectura en cascada basada en segmentación U-Net y una CNN de clasificación.
 
 Este proyecto se presenta mediante una aplicación web construida con **Streamlit**, que permite realizar inferencias sobre imágenes médicas de forma interactiva.
+
+<p align="center">
+<img src="assets/screenshots/home_streamlit.png" width="950">
+</p>
 
 ## 📑 Índice
 
@@ -69,12 +77,6 @@ Para ello se desarrollaron dos pipelines independientes que posteriormente fuero
 - Predicción en tiempo real sobre imágenes médicas.
 
 ## 🖥️ Vista previa
-
-### Página principal
-
-<p align="center">
-  <img src="assets/screenshots/home_streamlit.png" width="900">
-</p>
 
 ### 🧠 Clasificador de tumor cerebral
 
@@ -243,12 +245,9 @@ El modelo binario de cerebro alcanzó una **accuracy del 92 %** sobre un conjunt
 | Tumor | 0,96 | 0,86 | 0,91 | 400 |
 | **Promedio ponderado** | **0,92** | **0,92** | **0,91** | **800** |
 
-La matriz de confusión registró:
+El modelo obtuvo una **accuracy del 92 %** sobre un conjunto de test balanceado de 800 imágenes.
 
-- 386 imágenes correctamente clasificadas como no tumor.
-- 346 imágenes correctamente clasificadas como tumor.
-- 14 falsos positivos.
-- 54 falsos negativos.
+Los resultados muestran una elevada capacidad para diferenciar entre imágenes con presencia de tumor y aquellas sin evidencia tumoral, constituyendo una base sólida para aplicaciones académicas de apoyo al diagnóstico.
 
 
 ---
@@ -435,7 +434,7 @@ La descarga se gestiona desde los módulos de carga incluidos en el proyecto, po
 - La clasificación depende de la calidad de la segmentación previa.
 - Los cortes extremos del volumen pueden contener una región hepática muy pequeña o inexistente.
 - Las lesiones hepáticas presentan formas, tamaños y densidades heterogéneas.
-- La accuracy del clasificador V4B evidencia margen de mejora antes de considerar aplicaciones más exigentes.
+- El rendimiento del clasificador V4B evidencia margen de mejora antes de considerar aplicaciones más exigentes.
 
 ---
 
