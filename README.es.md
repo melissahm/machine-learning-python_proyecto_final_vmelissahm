@@ -11,7 +11,7 @@ El proyecto integra dos módulos independientes:
 - 🧠 **Clasificación binaria de tumores cerebrales** a partir de resonancias magnéticas (RM).
 - 🟤 **Detección de tumores hepáticos** mediante una arquitectura en cascada basada en **segmentación U-Net** y una **CNN** para clasificación.
 
-La aplicación ha sido desarrollada como proyecto final del Bootcamp de Data Science & Machine Learning de 4Geeks Academy y cuenta con una interfaz web desarrollada en **Streamlit**, que permite realizar predicciones directamente sobre imágenes médicas.
+Proyecto desarrollado durante el Bootcamp de Data Science & Machine Learning de 4Geeks Academy y cuenta con una interfaz web desarrollada en **Streamlit**, que permite realizar predicciones directamente sobre imágenes médicas.
 
 <p align="center">
 
@@ -77,4 +77,42 @@ Para ello se desarrollaron dos pipelines independientes que posteriormente fuero
 
 <p align="center">
   <img src="assets/screenshots/streamlit_cerebro_result.png" width="900">
+</p>
+
+### 🟤 Análisis hepático
+
+<p align="center">
+  <img src="assets/screenshots/streamlit_higado.png" width="900">
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/streamlit_higado_segmentacion.png" width="900">
+</p>
+
+<p align="center">
+  <img src="assets/screenshots/streamlit_higado_result.png" width="900">
+</p>
+
+
+## 🧠 Funcionamiento del modelo cerebral
+
+El módulo cerebral utiliza una red neuronal convolucional (CNN) para clasificar resonancias magnéticas en dos categorías:
+
+- Tumor
+- No tumor
+
+<p align="center">
+  <img src="assets/diagrams/diagrama_cerebro.png" width="850">
+</p>
+
+## 🟤 Funcionamiento del modelo hepático
+
+El módulo hepático implementa una arquitectura en cascada formada por dos modelos de Deep Learning.
+
+1. Segmentación automática del hígado mediante U-Net.
+2. Recorte de la región hepática (ROI).
+3. Clasificación binaria tumor / no tumor mediante una CNN.
+
+<p align="center">
+  <img src="assets/diagrams/diagrama_higado.png" width="950">
 </p>
