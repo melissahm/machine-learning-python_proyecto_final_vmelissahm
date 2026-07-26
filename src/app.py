@@ -13,8 +13,12 @@ st.title("🩺 MedImage Diagnosis")
 
 st.write(
     """
-    Aplicación académica para la clasificación de imágenes médicas mediante
-    modelos de Deep Learning.
+      Aplicación desarrollada con **Deep Learning** para el análisis de imágenes médicas.
+
+    El sistema integra dos módulos independientes:
+
+    - 🧠 **Cerebro:** clasificación de resonancias magnéticas (RM) en **tumor** o **no tumor** mediante una red neuronal convolucional (CNN).
+    - 🟤 **Hígado:** análisis de tomografías computarizadas (TC) mediante un modelo de **segmentación U-Net** para localizar el hígado, seguido de una CNN que clasifica la región hepática como **tumor** o **no tumor**.
     """
 )
 
